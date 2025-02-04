@@ -1,6 +1,6 @@
 <template>
   <div class="calendar">
-    <h2>📅 {{ new Date().toLocaleDateString("vi-VN") }}</h2>
+    <h2>📅 {{ currentDate }}</h2>
     <div class="button-container">
       <button @click="prevMonth" class="nav-button">&#9664;</button>
       <button @click="resetToToday" class="nav-button">Hôm nay</button>
@@ -8,13 +8,24 @@
     </div>
     <div class="calendar-grid">
       <div class="day" v-for="day in days" :key="day">{{ day }}</div>
-      <div class="date" v-for="date in dates" :key="date" 
+      <div class="date" 
+           v-for="date in dates" 
+           :key="date" 
            :class="{ 
-             'current-day': date === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear(),
+             'current-day': isCurrentDay(date),
              'seeded-day': isSeededDay(date)
-           }">
+           }"
+           @click="showMessage(date)">
         {{ date }}
         <span v-if="isSeededDay(date)" class="tulip-icon">🌷</span>
+      </div>
+    </div>
+
+    <!-- Hộp thoại hiển thị message -->
+    <div v-if="selectedMessage" class="message-popup">
+      <div class="message-content">
+        <p v-html="formattedMessage"></p>
+        <button @click="selectedMessage = null">Đóng</button>
       </div>
     </div>
   </div>
@@ -29,8 +40,20 @@ export default {
       dates: [],
       currentMonth: new Date().getMonth(),
       currentYear: new Date().getFullYear(),
-      seededDays: JSON.parse(localStorage.getItem('seededDays')) || {}
+      seededDays: JSON.parse(localStorage.getItem('seededDays')) || {},
+      seedMessages: JSON.parse(localStorage.getItem('seedMessages')) || {},
+      selectedMessage: null
     };
+  },
+  computed: {
+    formattedMessage() {
+      if (!this.selectedMessage) return "";
+      let message = this.selectedMessage
+        .replace(/(\.\.\.|[.!?])\s/g, "$1<br>")
+        .replace(/([.!?])\s/g, "$1<br>") // Xuống dòng sau dấu . ! ?
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Làm đậm nội dung giữa ** **
+      return message;
+    }
   },
   created() {
     this.updateCurrentDate();
@@ -76,13 +99,18 @@ export default {
       this.updateCurrentDate();
       this.generateDates();
     },
+    isCurrentDay(date) {
+      return date === new Date().getDate() && this.currentMonth === new Date().getMonth() && this.currentYear === new Date().getFullYear();
+    },
     isSeededDay(date) {
       if (!date) return false;
       const key = `${this.currentYear}-${this.currentMonth + 1}-${date}`;
       return this.seededDays[key];
     },
-    refresh() {
-      this.seededDays = JSON.parse(localStorage.getItem('seededDays')) || {};
+    showMessage(date) {
+      if (!this.isSeededDay(date)) return;
+      const key = new Date(this.currentYear, this.currentMonth, date).toLocaleDateString("vi-VN");
+      this.selectedMessage = this.seedMessages[key] || "Không tìm thấy thông điệp cho ngày này.";
     }
   }
 };
@@ -125,6 +153,7 @@ export default {
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
+  cursor: pointer;
 }
 .day {
   background-color: #f0f0f0;
@@ -138,11 +167,45 @@ export default {
   background-color: #ffebee;
   position: relative;
 }
-
+.seeded-day:hover {
+  background-color: #f8bbd0;
+}
 .tulip-icon {
   position: absolute;
   bottom: 2px;
   right: 2px;
   font-size: 12px;
+}
+
+/* Hộp thoại hiển thị message */
+.message-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1000;
+  max-width: 400px;
+  text-align: left;
+}
+.message-content p {
+  line-height: 1.5;
+  white-space: pre-line; /* Giữ format xuống dòng */
+}
+.message-content button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.message-content button:hover {
+  background-color: #0056b3;
 }
 </style>

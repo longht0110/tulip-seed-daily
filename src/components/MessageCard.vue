@@ -1,6 +1,6 @@
 <template>
   <div class="message-card">
-    <p>🌷 <span v-html="formattedMessage"></span></p>
+    <p>🌷🌷🌷🌷🌷🌷🌷<br> <span v-html="formattedMessage"></span></p>
   </div>
 </template>
 
@@ -10,9 +10,13 @@ export default {
   computed: {
     formattedMessage() {
       // Chuyển đổi các đoạn giữa * thành thẻ <strong> cho in đậm
-      let formatted = this.message.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+      let formatted = this.message
+        .replace(/(\.\.\.|[.!?])\s/g, "$1<br>")
+        .replace(/\*(.*?)\*/g, '<strong>$1</strong>');
       // Chèn xuống dòng sau mỗi dấu chấm
       formatted = formatted.replace(/\./g, '.<br>');
+      formatted = formatted.replace(/\!/g, '.<br>');
+      formatted = formatted.replace(/\?/g, '.<br>');
       return formatted;
     }
   }
