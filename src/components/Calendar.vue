@@ -22,10 +22,14 @@
     </div>
 
     <!-- Hộp thoại hiển thị message -->
-    <div v-if="selectedMessage" class="message-popup">
-      <div class="message-content">
-        <p v-html="formattedMessage"></p>
-        <button @click="selectedMessage = null">Close</button>
+    <div v-if="selectedMessage" class="overlay" @click.self="closeMessage">
+      <div class="message-popup">
+        <button class="close-button" @click="closeMessage">
+          <span class="material-icons">X</span>
+        </button>
+        <div class="message-content">
+          <p v-html="formattedMessage"></p>
+        </div>
       </div>
     </div>
   </div>
@@ -111,6 +115,9 @@ export default {
       if (!this.isSeededDay(date)) return;
       const key = new Date(this.currentYear, this.currentMonth, date).toLocaleDateString("vi-VN");
       this.selectedMessage = this.seedMessages[key] || "Không tìm thấy thông điệp cho ngày này.";
+    },
+    closeMessage() {
+      this.selectedMessage = null;
     }
   }
 };
@@ -177,35 +184,72 @@ export default {
   font-size: 12px;
 }
 
+/* Overlay mờ nền */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
 /* Hộp thoại hiển thị message */
 .message-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   background: white;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  z-index: 1000;
   max-width: 400px;
+  max-height: 80vh;
   text-align: left;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
+}
+.message-content {
+  margin-top: 40px; /* Đảm bảo văn bản không bị che bởi nút đóng */
 }
 .message-content p {
   line-height: 1.5;
-  white-space: pre-line; /* Giữ format xuống dòng */
+  white-space: pre-line;
 }
-.message-content button {
-  margin-top: 10px;
-  padding: 6px 12px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.close-button {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: transparent;
+  border: 2px solid #828282;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: color 0.3s, border-color 0.3s;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ff0000;
 }
-.message-content button:hover {
-  background-color: #0056b3;
+.close-button:hover {
+  color: #fbff00;
+}
+
+/* Hiệu ứng chuyển động */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
