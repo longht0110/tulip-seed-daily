@@ -1,7 +1,8 @@
 <template>
   <div class="app">
     <header>
-      <h1>🌷Tulip Seed Daily🌷</h1>
+      <h1>Tulip Seed Daily
+        <br>🌷</h1>
     </header>
     <main>
       <router-view />

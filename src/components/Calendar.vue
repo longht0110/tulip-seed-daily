@@ -1,6 +1,6 @@
 <template>
   <div class="calendar">
-    <h2>📅 {{ currentDate }}</h2>
+    <h2>📅 {{ new Date().toLocaleDateString("vi-VN") }}</h2>
     <div class="button-container">
       <button @click="prevMonth" class="nav-button">&#9664;</button>
       <button @click="resetToToday" class="nav-button">Hôm nay</button>
@@ -8,7 +8,14 @@
     </div>
     <div class="calendar-grid">
       <div class="day" v-for="day in days" :key="day">{{ day }}</div>
-      <div class="date" v-for="date in dates" :key="date" :class="{ 'current-day': date === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear() }">{{ date }}</div>
+      <div class="date" v-for="date in dates" :key="date" 
+           :class="{ 
+             'current-day': date === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear(),
+             'seeded-day': isSeededDay(date)
+           }">
+        {{ date }}
+        <span v-if="isSeededDay(date)" class="tulip-icon">🌷</span>
+      </div>
     </div>
   </div>
 </template>
@@ -21,7 +28,8 @@ export default {
       days: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
       dates: [],
       currentMonth: new Date().getMonth(),
-      currentYear: new Date().getFullYear()
+      currentYear: new Date().getFullYear(),
+      seededDays: JSON.parse(localStorage.getItem('seededDays')) || {}
     };
   },
   created() {
@@ -67,6 +75,14 @@ export default {
       this.currentYear = new Date().getFullYear();
       this.updateCurrentDate();
       this.generateDates();
+    },
+    isSeededDay(date) {
+      if (!date) return false;
+      const key = `${this.currentYear}-${this.currentMonth + 1}-${date}`;
+      return this.seededDays[key];
+    },
+    refresh() {
+      this.seededDays = JSON.parse(localStorage.getItem('seededDays')) || {};
     }
   }
 };
@@ -117,5 +133,16 @@ export default {
 .current-day {
   background-color: #FFD700;
   font-weight: bold;
+}
+.seeded-day {
+  background-color: #ffebee;
+  position: relative;
+}
+
+.tulip-icon {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 12px;
 }
 </style>
