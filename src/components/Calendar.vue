@@ -25,7 +25,7 @@
     <div v-if="selectedMessage" class="message-popup">
       <div class="message-content">
         <p v-html="formattedMessage"></p>
-        <button @click="selectedMessage = null">Đóng</button>
+        <button @click="selectedMessage = null">Close</button>
       </div>
     </div>
   </div>

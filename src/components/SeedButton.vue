@@ -35,7 +35,7 @@ export default {
       // Đợi 1 giây để đảm bảo message được lưu rồi mới refresh
       setTimeout(() => {
         location.reload();
-      }, 1000);
+      }, 999);
     }
   },
   created() {

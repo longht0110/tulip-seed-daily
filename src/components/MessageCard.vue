@@ -1,6 +1,6 @@
 <template>
   <div class="message-card">
-    <p>🌷🌷🌷🌷🌷🌷🌷<br> <span v-html="formattedMessage"></span></p>
+    <p>/🌷🌷🌷🌷🌷🌷🌷/<br> <span v-html="formattedMessage"></span></p>
   </div>
 </template>
 
