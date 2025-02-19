@@ -1,6 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = 'AIzaSyBUkiR9NaJ6RYMFlVYF-qcD-VZ5_erXZs8'; // Thay thế bằng API key của bạn
+// Lấy API key từ biến môi trường
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+  console.error("API key is missing! Make sure to set VITE_GEMINI_API_KEY in .env");
+}
+
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export async function generateMessage(context) {
@@ -12,3 +18,4 @@ export async function generateMessage(context) {
   const response = await result.response;
   return response.text();
 } 
+
